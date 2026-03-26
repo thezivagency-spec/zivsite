@@ -85,14 +85,18 @@
     }
 
     /* ── Custom Cursor ────────────────────────────────── */
-    #cursor, #cursor-ring {
+    #cursor,
+    #cursor-ring {
       display: none;
     }
 
     @media (pointer: fine) {
-      #cursor, #cursor-ring {
+
+      #cursor,
+      #cursor-ring {
         display: block;
       }
+
       #cursor {
         position: fixed;
         width: 10px;
@@ -449,40 +453,114 @@
 
     /* ── Mobile Layout Optimization ───────────────────── */
     @media (max-width: 768px) {
+
       /* Remove forced heights to prevent empty space */
-      section.full { min-height: auto !important; }
-      
+      section.full {
+        min-height: auto !important;
+      }
+
       /* Reduce massive padding and margin on mobile */
-      .py-24 { padding-top: 4rem !important; padding-bottom: 4rem !important; }
-      .py-16 { padding-top: 3rem !important; padding-bottom: 3rem !important; }
-      .pt-28 { padding-top: 6rem !important; }
-      .mb-24 { margin-bottom: 3.5rem !important; }
-      .mb-20 { margin-bottom: 2.5rem !important; }
-      .mb-16 { margin-bottom: 2rem !important; }
-      .gap-16 { gap: 2rem !important; }
-      
+      .py-24 {
+        padding-top: 4rem !important;
+        padding-bottom: 4rem !important;
+      }
+
+      .py-16 {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+      }
+
+      .pt-28 {
+        padding-top: 6rem !important;
+      }
+
+      .mb-24 {
+        margin-bottom: 3.5rem !important;
+      }
+
+      .mb-20 {
+        margin-bottom: 2.5rem !important;
+      }
+
+      .mb-16 {
+        margin-bottom: 2rem !important;
+      }
+
+      .gap-16 {
+        gap: 2rem !important;
+      }
+
       /* Fix Mobile Menu Spacing */
       #mobile-menu {
         padding: 2rem !important;
         justify-content: flex-start !important;
         padding-top: 6rem !important;
       }
-      #mobile-menu > div.flex-col {
+
+      #mobile-menu>div.flex-col {
         gap: 1.25rem !important;
         margin-bottom: 2rem !important;
       }
-      
+
       /* Ensure text fits smoothly on small screens */
       .mob-link {
         font-size: clamp(2.5rem, 12vw, 4rem) !important;
         line-height: 1 !important;
       }
-      
+
       /* Typography tweaks to prevent layout breaking */
-      h1, h2, h3, h4, .font-headline {
+      h1,
+      h2,
+      h3,
+      h4,
+      .font-headline {
         word-wrap: break-word !important;
         overflow-wrap: break-word !important;
         line-height: 1.1 !important;
+      }
+    }
+
+    /* ── Flex Spacing: Desktop on Mobile / Short Screens ── */
+    @media (max-height: 850px) and (min-width: 769px) {
+
+      /* Remove forced heights ensuring content flows naturally */
+      section.full {
+        min-height: auto !important;
+        height: auto !important;
+      }
+
+      /* Scale down massive vertical padding blocks */
+      .py-24 {
+        padding-top: 4rem !important;
+        padding-bottom: 4rem !important;
+      }
+
+      .py-16 {
+        padding-top: 3rem !important;
+        padding-bottom: 3rem !important;
+      }
+
+      .pt-28 {
+        padding-top: 5rem !important;
+      }
+
+      /* Scale down vertical margins blocking out excessive white space */
+      .mb-24 {
+        margin-bottom: 4rem !important;
+      }
+
+      .mb-20 {
+        margin-bottom: 3rem !important;
+      }
+
+      .mb-16 {
+        margin-bottom: 2rem !important;
+      }
+
+      /* Adjust custom minimum heights */
+      .min-h-\[60vh\] {
+        min-height: min-content !important;
+        padding: 4rem 0 !important;
       }
     }
   </style>
