@@ -1,0 +1,1467 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+  <title>ZIV — Content Repurposing Agency</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&family=Manrope:wght@200;300;400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap"
+    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
+    rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "bg-base": "#131313",
+            "bg-low": "#1b1b1b",
+            "bg-container": "#1f1f1f",
+            "bg-high": "#2a2a2a",
+            "bg-highest": "#353535",
+            "bg-lowest": "#0e0e0e",
+            "primary": "#b6d088",
+            "primary-dk": "#556b2f",
+            "on-primary": "#233600",
+            "outline-v": "#45483c",
+            "on-surface": "#e2e2e2",
+            "on-surface-v": "#c5c8b8",
+            "outline": "#8f9284",
+          },
+          fontFamily: {
+            headline: ["Space Grotesk", "sans-serif"],
+            body: ["Manrope", "sans-serif"],
+            label: ["Space Grotesk", "sans-serif"],
+            mono: ["Space Mono", "monospace"],
+          },
+          borderRadius: { DEFAULT: "0px", lg: "0px", xl: "0px", "2xl": "0px", full: "9999px" },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    /* ── Reset & Base ─────────────────────────────────── */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #131313;
+      color: #e2e2e2;
+      font-family: 'Manrope', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    * {
+      border-radius: 0 !important;
+    }
+
+    /* ── Noise texture overlay ────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 8000;
+      opacity: 0.45;
+    }
+
+    /* ── Custom Cursor ────────────────────────────────── */
+    #cursor {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background: #b6d088;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.15s ease, background 0.2s ease;
+      top: -20px;
+      left: -20px;
+    }
+
+    #cursor-ring {
+      position: fixed;
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(182, 208, 136, 0.5);
+      pointer-events: none;
+      z-index: 9998;
+      transition: width 0.3s ease, height 0.3s ease, border-color 0.2s ease;
+      top: -20px;
+      left: -20px;
+    }
+
+    body.cursor-hover #cursor {
+      transform: scale(2.5);
+      background: #556b2f;
+    }
+
+    body.cursor-hover #cursor-ring {
+      width: 64px;
+      height: 64px;
+      border-color: rgba(85, 107, 47, 0.6);
+    }
+
+    /* ── Scrollbar ────────────────────────────────────── */
+    ::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #0e0e0e;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #556b2f;
+    }
+
+    /* ── Material icons ───────────────────────────────── */
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      vertical-align: middle;
+    }
+
+    /* ── Nav underline ────────────────────────────────── */
+    .nav-link {
+      position: relative;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #b6d088;
+      transition: width 0.35s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    .nav-link:hover::after,
+    .nav-link.active::after {
+      width: 100%;
+    }
+
+    .nav-link.active {
+      color: #b6d088;
+    }
+
+    /* ── Scroll Reveal ────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.75s cubic-bezier(0.4, 0, 0.2, 1), transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-50px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal-left.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(50px);
+      transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .reveal-right.visible {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    /* Stagger */
+    .stagger>* {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .stagger.visible>*:nth-child(1) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.04s;
+    }
+
+    .stagger.visible>*:nth-child(2) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.12s;
+    }
+
+    .stagger.visible>*:nth-child(3) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.20s;
+    }
+
+    .stagger.visible>*:nth-child(4) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.28s;
+    }
+
+    .stagger.visible>*:nth-child(5) {
+      opacity: 1;
+      transform: none;
+      transition-delay: 0.36s;
+    }
+
+    /* ── Marquee ──────────────────────────────────────── */
+    .marquee-outer {
+      overflow: hidden;
+    }
+
+    .marquee-track {
+      display: flex;
+      gap: 3rem;
+      animation: marquee 26s linear infinite;
+      white-space: nowrap;
+    }
+
+    @keyframes marquee {
+      from {
+        transform: translateX(0);
+      }
+
+      to {
+        transform: translateX(-50%);
+      }
+    }
+
+    /* ── Button Glow ──────────────────────────────────── */
+    .btn-primary {
+      background: #b6d088;
+      color: #233600;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary:hover {
+      background: #c8e09a;
+      box-shadow: 0 0 32px rgba(182, 208, 136, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .btn-ghost {
+      border: 1px solid rgba(182, 208, 136, 0.3);
+      color: #b6d088;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      background: transparent;
+      transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-ghost:hover {
+      border-color: #b6d088;
+      background: rgba(182, 208, 136, 0.06);
+    }
+
+    /* ── Work card zoom ───────────────────────────────── */
+    .work-card {
+      overflow: hidden;
+      position: relative;
+    }
+
+    .work-card-inner {
+      transition: transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    .work-card:hover .work-card-inner {
+      transform: scale(1.05);
+    }
+
+    .work-card .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      display: flex;
+      align-items: flex-end;
+      padding: 2rem;
+    }
+
+    .work-card:hover .card-overlay {
+      opacity: 1;
+    }
+
+    /* ── Service row hover ────────────────────────────── */
+    .service-row {
+      transition: background-color 0.4s ease;
+    }
+
+    .service-row:hover {
+      background-color: #1f1f1f;
+    }
+
+    .service-row .svc-num {
+      transition: color 0.3s ease;
+      color: rgba(182, 208, 136, 0.35);
+    }
+
+    .service-row:hover .svc-num {
+      color: #b6d088;
+    }
+
+    /* ── Process step ─────────────────────────────────── */
+    .process-step {
+      border-left: 2px solid #2a2a2a;
+      padding-left: 2rem;
+      transition: border-color 0.4s ease;
+    }
+
+    .process-step:hover {
+      border-color: #b6d088;
+    }
+
+    /* ── Form inputs ──────────────────────────────────── */
+    .form-field {
+      background: #0e0e0e !important;
+      border: none;
+      border-bottom: 1px solid #45483c !important;
+      color: #e2e2e2 !important;
+      padding: 14px 0;
+      width: 100%;
+      font-family: 'Manrope', sans-serif;
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+
+    .form-field:focus {
+      border-color: #b6d088 !important;
+      box-shadow: none !important;
+      background: #0e0e0e !important;
+      color: #e2e2e2 !important;
+    }
+
+    .form-field::placeholder {
+      color: #454545;
+    }
+
+    /* Fix Chrome Autofill in Dark Mode */
+    .form-field:-webkit-autofill,
+    .form-field:-webkit-autofill:hover,
+    .form-field:-webkit-autofill:focus,
+    .form-field:-webkit-autofill:active {
+      -webkit-box-shadow: 0 0 0 30px #0e0e0e inset !important;
+      -webkit-text-fill-color: #e2e2e2 !important;
+      transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* ── Mobile menu ──────────────────────────────────── */
+    #mobile-menu {
+      transform: translateX(100%);
+      transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    #mobile-menu.open {
+      transform: translateX(0);
+    }
+
+    /* ── Text outline (Stitch ghost text) ──────────────── */
+    .text-ghost {
+      -webkit-text-stroke: 1px rgba(182, 208, 136, 0.25);
+      color: transparent;
+    }
+
+    /* ── Section min height ───────────────────────────── */
+    section.full {
+      min-height: 100vh;
+    }
+
+    /* ── Spin slow ────────────────────────────────────── */
+    @keyframes spin-slow {
+      from {
+        transform: rotate(0);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .spin-slow {
+      animation: spin-slow 24s linear infinite;
+    }
+
+    /* ── Tonal tag chip ───────────────────────────────── */
+    .tag {
+      background: #353535;
+      color: #c5c8b8;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.6rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      padding: 4px 10px;
+    }
+  </style>
+</head>
+
+<body class="bg-bg-base text-on-surface selection:bg-primary selection:text-on-primary">
+
+  <!-- ══════════════════════════════════════════════════
+     CURSOR
+══════════════════════════════════════════════════ -->
+  <div id="cursor"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ══════════════════════════════════════════════════
+     NAVBAR
+══════════════════════════════════════════════════ -->
+  <nav id="navbar"
+    class="fixed top-0 w-full z-50 bg-bg-base/80 backdrop-blur-[20px] flex justify-between items-center px-6 md:px-12 py-6 transition-all duration-500">
+    <!-- Logo -->
+    <a href="#home" class="flex items-center gap-3 group">
+      <div
+        class="w-7 h-7 border border-primary/50 flex items-center justify-center group-hover:border-primary transition-colors duration-300">
+        <div class="w-3 h-3 bg-primary"></div>
+      </div>
+      <span class="font-headline font-black text-2xl tracking-tighter text-primary">ZIV</span>
+    </a>
+
+    <!-- Desktop links -->
+    <div class="hidden md:flex gap-10 items-center">
+      <a href="#home"
+        class="nav-link active font-label text-xs uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">Home</a>
+      <a href="#services"
+        class="nav-link font-label text-xs uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">Services</a>
+      <a href="#work"
+        class="nav-link font-label text-xs uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">Work</a>
+      <a href="#process"
+        class="nav-link font-label text-xs uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">Process</a>
+      <a href="#about"
+        class="nav-link font-label text-xs uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">About</a>
+      <a href="#contact"
+        class="nav-link font-label text-xs uppercase tracking-widest text-on-surface/70 hover:text-on-surface transition-colors">Contact</a>
+    </div>
+
+    <!-- CTA -->
+    <a href="#contact" class="hidden md:inline-flex btn-primary px-6 py-3 text-xs">
+      Start a Project <span class="material-symbols-outlined text-base">arrow_forward</span>
+    </a>
+
+    <!-- Hamburger -->
+    <button id="hamburger" class="md:hidden flex flex-col gap-[5px] p-2 z-50 relative">
+      <span class="ham block w-6 h-[1.5px] bg-primary transition-all duration-300 origin-center"></span>
+      <span class="ham block w-6 h-[1.5px] bg-primary transition-all duration-300"></span>
+      <span class="ham block w-4 h-[1.5px] bg-primary transition-all duration-300 origin-center"></span>
+    </button>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="fixed inset-0 z-40 bg-bg-lowest flex flex-col justify-center px-10">
+    <div class="flex flex-col gap-8 mb-16">
+      <a href="#home"
+        class="mob-link font-headline font-black text-6xl text-on-surface hover:text-primary transition-colors">Home</a>
+      <a href="#services"
+        class="mob-link font-headline font-black text-6xl text-on-surface hover:text-primary transition-colors">Services</a>
+      <a href="#work"
+        class="mob-link font-headline font-black text-6xl text-on-surface hover:text-primary transition-colors">Work</a>
+      <a href="#process"
+        class="mob-link font-headline font-black text-6xl text-on-surface hover:text-primary transition-colors">Process</a>
+      <a href="#about"
+        class="mob-link font-headline font-black text-6xl text-on-surface hover:text-primary transition-colors">About</a>
+      <a href="#contact"
+        class="mob-link font-headline font-black text-6xl text-on-surface hover:text-primary transition-colors">Contact</a>
+    </div>
+    <span class="font-mono text-xs text-primary tracking-widest uppercase">thezivagency@gmail.com</span>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════
+     HOME / HERO
+══════════════════════════════════════════════════ -->
+  <section id="home"
+    class="full flex flex-col md:flex-row items-center pt-28 md:pt-32 px-6 md:px-12 gap-12 overflow-hidden bg-bg-base">
+
+    <!-- Left text -->
+    <div class="w-full md:w-3/5 z-10">
+      <p class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-6 reveal">
+        Content Repurposing Agency — Est. 2026
+      </p>
+      <h1 class="font-headline font-black tracking-tighter leading-[0.9] text-on-surface mb-8 reveal"
+        style="font-size:clamp(3rem,8vw,7.5rem); transition-delay:0.05s;">
+        TURN LONG<br />VIDEOS INTO<br /><span class="text-primary">MULTIPLE</span><br />SHORT PIECES.
+      </h1>
+      <p class="font-body text-lg md:text-xl text-on-surface-v max-w-lg leading-relaxed mb-12 reveal"
+        style="transition-delay:0.12s;">
+        We help creators and brands transform long-form content into short videos designed for reach, engagement, and
+        growth.
+      </p>
+
+      <div class="flex flex-wrap gap-4 mb-16 reveal" style="transition-delay:0.20s;">
+        <a href="#contact" class="btn-primary px-8 py-4 text-xs">
+          Start a Project <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </a>
+        <a href="#work" class="btn-ghost px-8 py-4 text-xs">
+          View Work
+        </a>
+      </div>
+
+      <!-- Stats row -->
+      <div class="flex gap-12 pt-10 border-t border-outline-v/20 reveal" style="transition-delay:0.28s;">
+        <div>
+          <span class="font-headline font-black text-4xl text-on-surface">30+</span>
+          <p class="font-label text-[10px] text-primary uppercase tracking-widest mt-1">Videos Repurposed</p>
+        </div>
+        <div>
+          <span class="font-headline font-black text-4xl text-on-surface">2</span>
+          <p class="font-label text-[10px] text-primary uppercase tracking-widest mt-1">Clients Served</p>
+        </div>
+        <div>
+          <span class="font-headline font-black text-4xl text-on-surface">100%</span>
+          <p class="font-label text-[10px] text-primary uppercase tracking-widest mt-1">Commitment to Quality</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right visual — Logo showcase -->
+    <div class="w-full md:w-2/5 h-[380px] md:h-[680px] relative reveal-right">
+      <!-- Background slab -->
+      <div class="absolute inset-0 bg-bg-low"></div>
+      <!-- Grid texture -->
+      <div class="absolute inset-0 opacity-[0.06]"
+        style="background-image:linear-gradient(rgba(182,208,136,0.4) 1px,transparent 1px),linear-gradient(90deg,rgba(182,208,136,0.4) 1px,transparent 1px);background-size:44px 44px;">
+      </div>
+      <!-- Radial glow behind logo -->
+      <div class="absolute inset-0"
+        style="background:radial-gradient(ellipse 60% 55% at 50% 50%, rgba(85,107,47,0.22) 0%, transparent 70%);"></div>
+      <!-- Subtle ring accent (behind logo) -->
+      <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+        <div class="w-72 h-72 border border-primary/10 spin-slow" style="animation-duration:40s;"></div>
+      </div>
+      <!-- Logo image -->
+      <div class="absolute inset-0 flex items-center justify-center px-10 pb-4">
+        <img src="ziv_logo_final.jpg" alt="ZIV Agency Logo"
+          class="w-full max-w-[300px] md:max-w-[380px] object-contain mix-blend-screen">
+      </div>
+      <!-- Bottom label -->
+      <div class="absolute bottom-0 right-0 p-6 bg-bg-base">
+        <span class="font-mono text-[10px] tracking-[0.3em] uppercase text-on-surface/30">01 / EST. 2026</span>
+      </div>
+      <!-- Corner accents -->
+      <div class="absolute top-0 left-0 w-8 h-8 border-t border-l border-primary/60"></div>
+      <div class="absolute top-0 right-0 w-8 h-8 border-t border-r border-primary/60"></div>
+      <div class="absolute bottom-0 left-0 w-8 h-8 border-b border-l border-primary/60"></div>
+      <div class="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-primary/60"></div>
+      <!-- Floating tag -->
+      <div class="absolute -bottom-5 -left-5 bg-primary-dk px-5 py-4 z-10">
+        <p class="font-mono text-xs tracking-widest text-primary uppercase">Content Studio</p>
+        <p class="font-headline font-black text-xl text-on-surface mt-0.5">Since 2026</p>
+      </div>
+      <!-- Top-right sub-label -->
+      <div class="absolute top-5 right-5">
+        <span class="font-mono text-[9px] tracking-[0.3em] uppercase text-primary/40">ZIV AGENCY</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Marquee ─────────────────────────────────────── -->
+  <div class="marquee-outer border-t border-b border-outline-v/15 py-5 bg-bg-lowest/60">
+    <div class="marquee-track">
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">CONTENT REPURPOSING</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">VIDEO EDITING</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">SHORT-FORM CONTENT</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">SOCIAL MEDIA POSTING</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">CLIP STRATEGY</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <!-- dup for seamless loop -->
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">CONTENT REPURPOSING</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">VIDEO EDITING</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">SHORT-FORM CONTENT</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">SOCIAL MEDIA POSTING</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+      <span class="font-headline font-black text-xl tracking-widest text-on-surface/8">CLIP STRATEGY</span>
+      <span class="font-headline font-black text-xl text-primary/40">✦</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════
+     SERVICES
+══════════════════════════════════════════════════ -->
+  <section id="services" class="full py-24 bg-bg-base">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+
+      <!-- Header -->
+      <div class="mb-20 grid grid-cols-1 md:grid-cols-12 gap-8">
+        <div class="md:col-span-6 reveal-left">
+          <p class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-5">Capabilities / 2026</p>
+          <h2 class="font-headline font-black tracking-tighter leading-[0.9] text-on-surface"
+            style="font-size:clamp(3rem,7vw,7rem);">
+            WHAT<br />WE <span class="text-ghost">DO.</span>
+          </h2>
+        </div>
+        <div class="md:col-span-5 md:col-start-8 flex items-end reveal-right">
+          <p class="font-body text-lg text-on-surface-v leading-relaxed">
+            We specialize in one thing done exceptionally — turning long-form video into high-performing short content
+            ready for every platform.
+          </p>
+        </div>
+      </div>
+
+      <!-- Service list (Stitch-style rows) -->
+      <div class="grid grid-cols-1 gap-px bg-outline-v/20 stagger">
+
+        <!-- 01 -->
+        <div
+          class="service-row bg-bg-low py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-start px-6 md:px-0 group">
+          <div class="md:col-span-2 md:pl-0">
+            <span class="svc-num font-headline font-black text-5xl md:text-7xl">01</span>
+          </div>
+          <div class="md:col-span-6">
+            <h3 class="font-headline font-bold text-3xl md:text-5xl uppercase tracking-tight mb-6">Content Repurposing
+            </h3>
+            <p class="font-body text-on-surface-v text-base leading-relaxed mb-8 max-w-md">
+              We take your podcasts, webinars, interviews, or long-form YouTube videos and extract the highest-value
+              moments — producing ready-to-post short clips tailored for each platform.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tag">Podcast Clips</span>
+              <span class="tag">YouTube Shorts</span>
+              <span class="tag">Multi-Platform</span>
+            </div>
+          </div>
+          <div class="md:col-span-4 flex justify-end items-center">
+            <div
+              class="w-full max-w-xs h-40 bg-primary-dk/30 flex items-center justify-center border border-primary/10 group-hover:border-primary/40 transition-colors duration-500">
+              <span class="material-symbols-outlined text-primary text-6xl"
+                style="font-variation-settings:'FILL' 0;">content_cut</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 02 -->
+        <div
+          class="service-row bg-bg-low py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-start px-6 md:px-0 group">
+          <div class="md:col-span-2">
+            <span class="svc-num font-headline font-black text-5xl md:text-7xl">02</span>
+          </div>
+          <div class="md:col-span-6">
+            <h3 class="font-headline font-bold text-3xl md:text-5xl uppercase tracking-tight mb-6">Video Editing</h3>
+            <p class="font-body text-on-surface-v text-base leading-relaxed mb-8 max-w-md">
+              Professional editing with precise cuts, captions, motion graphics, sound design, and color grading that
+              makes your content look native to the platform and impossible to scroll past.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tag">Auto-Captions</span>
+              <span class="tag">Motion Graphics</span>
+              <span class="tag">Color Grading</span>
+            </div>
+          </div>
+          <div class="md:col-span-4 flex justify-end items-center">
+            <div
+              class="w-full max-w-xs aspect-square bg-primary flex items-center justify-center group-hover:bg-primary/90 transition-colors">
+              <span class="material-symbols-outlined text-on-primary text-8xl"
+                style="font-variation-settings:'FILL' 1;">movie_edit</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 03 -->
+        <div
+          class="service-row bg-bg-low py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-start px-6 md:px-0 group">
+          <div class="md:col-span-2">
+            <span class="svc-num font-headline font-black text-5xl md:text-7xl">03</span>
+          </div>
+          <div class="md:col-span-6">
+            <h3 class="font-headline font-bold text-3xl md:text-5xl uppercase tracking-tight mb-6">Short-Form Strategy
+            </h3>
+            <p class="font-body text-on-surface-v text-base leading-relaxed mb-8 max-w-md">
+              We don't just cut and export — we decide which moments will drive the most engagement, write hooks, and
+              structure each clip for algorithmic performance on Reels, TikTok, and Shorts.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tag">Hook Writing</span>
+              <span class="tag">Trend Analysis</span>
+              <span class="tag">A/B Strategy</span>
+            </div>
+          </div>
+          <div class="md:col-span-4 flex justify-end items-center">
+            <div
+              class="w-full max-w-xs h-40 bg-bg-high border border-outline-v/20 group-hover:border-primary/40 transition-colors flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-6xl"
+                style="font-variation-settings:'FILL' 0;">trending_up</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div
+          class="service-row bg-bg-low py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-start px-6 md:px-0 group">
+          <div class="md:col-span-2">
+            <span class="svc-num font-headline font-black text-5xl md:text-7xl">04</span>
+          </div>
+          <div class="md:col-span-6">
+            <h3 class="font-headline font-bold text-3xl md:text-5xl uppercase tracking-tight mb-6">Social Media Posting
+            </h3>
+            <p class="font-body text-on-surface-v text-base leading-relaxed mb-8 max-w-md">
+              We handle the full publishing workflow — scheduling, captions, hashtags, and platform-specific formatting
+              — so your content goes live consistently without lifting a finger.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tag">Auto-Schedule</span>
+              <span class="tag">Caption Writing</span>
+              <span class="tag">All Platforms</span>
+            </div>
+          </div>
+          <div class="md:col-span-4 flex justify-end items-center">
+            <div
+              class="w-full max-w-xs h-40 bg-bg-high border border-outline-v/20 group-hover:border-primary/40 transition-colors flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-6xl"
+                style="font-variation-settings:'FILL' 0;">schedule_send</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 05 — Future -->
+        <div
+          class="service-row bg-bg-low py-12 md:py-16 grid grid-cols-1 md:grid-cols-12 gap-8 items-center px-6 md:px-0 group">
+          <div class="md:col-span-2">
+            <span class="svc-num font-headline font-black text-5xl md:text-7xl opacity-40">05</span>
+          </div>
+          <div class="md:col-span-9">
+            <p class="font-label text-xs uppercase tracking-[0.35em] text-primary mb-4">Coming Soon</p>
+            <h3 class="font-headline font-bold text-3xl md:text-5xl uppercase tracking-tight mb-4 text-on-surface/40">
+              Website Design · Digital Marketing · Full-Service Digital
+            </h3>
+            <p class="font-body text-on-surface-v/50 text-sm max-w-lg">
+              ZIV is expanding. Web design, paid ads, SEO, and comprehensive digital services are on the roadmap.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA -->
+      <div
+        class="mt-20 pt-12 border-t border-outline-v/15 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 reveal">
+        <div>
+          <h3 class="font-headline font-black text-4xl md:text-5xl tracking-tighter">Ready to repurpose?</h3>
+          <p class="font-body text-on-surface-v mt-2 text-sm">Send us a video — we'll show you what's possible.</p>
+        </div>
+        <a href="#contact" class="btn-primary px-10 py-5 text-xs flex-shrink-0">
+          Get Started <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════
+     WORK
+══════════════════════════════════════════════════ -->
+  <section id="work" class="full py-24 bg-bg-lowest">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+
+      <div class="flex justify-between items-end mb-16 flex-wrap gap-6">
+        <div class="reveal-left">
+          <p class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-4">Selected Outputs</p>
+          <h2
+            class="font-headline font-black text-7xl md:text-[9rem] tracking-tighter leading-none uppercase opacity-10">
+            WORK</h2>
+          <span class="font-label text-xs uppercase tracking-[0.5em] text-on-surface-v -mt-4 block">Portfolio
+            (05)</span>
+        </div>
+        <a href="#contact" class="reveal-right btn-ghost px-6 py-3 text-xs self-end">
+          All Projects <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </a>
+      </div>
+
+      <!-- Bento grid -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 stagger">
+
+        <!-- Large -->
+        <div class="md:col-span-8 work-card bg-bg-low group cursor-pointer" style="aspect-ratio:16/9;">
+          <div class="work-card-inner w-full h-full bg-bg-high relative flex items-center justify-center"
+            style="background:linear-gradient(135deg,rgba(85,107,47,0.18) 0%,#1b1b1b 60%,rgba(182,208,136,0.04) 100%);">
+            <div class="absolute inset-0 opacity-15"
+              style="background-image:linear-gradient(rgba(182,208,136,0.2) 1px,transparent 1px),linear-gradient(90deg,rgba(182,208,136,0.2) 1px,transparent 1px);background-size:48px 48px;">
+            </div>
+            <span class="font-headline font-black text-on-surface/5 uppercase tracking-widest"
+              style="font-size:5rem;">COMING SOON</span>
+          </div>
+          <div class="card-overlay">
+            <div>
+              <p class="font-label text-xs tracking-widest text-primary mb-2 uppercase">Projects Coming Soon</p>
+              <h4 class="font-headline font-bold text-2xl text-on-surface tracking-tight">Future Case Studies</h4>
+              <p class="font-body text-on-surface/50 text-sm mt-2">Our portfolio is being built — great work takes time
+              </p>
+            </div>
+          </div>
+          <div class="absolute top-4 left-4 bg-primary-dk/90 px-3 py-1.5">
+            <span class="font-mono text-[10px] text-primary tracking-widest uppercase">Coming Soon</span>
+          </div>
+        </div>
+
+        <!-- Tall card -->
+        <div class="md:col-span-4 work-card bg-bg-low group cursor-pointer" style="aspect-ratio:3/4;">
+          <div class="work-card-inner w-full h-full flex items-center justify-center"
+            style="background:linear-gradient(180deg,rgba(182,208,136,0.08) 0%,#1b1b1b 100%);">
+            <span class="font-headline font-black text-on-surface/5 text-5xl uppercase tracking-widest">SOON</span>
+          </div>
+          <div class="card-overlay">
+            <div>
+              <p class="font-label text-xs tracking-widest text-primary mb-2 uppercase">Your Project</p>
+              <h4 class="font-headline font-bold text-xl text-on-surface">Your Project Could Be Here</h4>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 2 -->
+        <div class="md:col-span-4 work-card bg-bg-low group cursor-pointer" style="aspect-ratio:4/3;">
+          <div class="work-card-inner w-full h-full flex items-center justify-center"
+            style="background:linear-gradient(45deg,rgba(85,107,47,0.12),#1b1b1b);">
+            <span class="font-headline font-black text-on-surface/5 text-4xl uppercase tracking-widest">SOON</span>
+          </div>
+          <div class="card-overlay">
+            <div>
+              <p class="font-label text-xs tracking-widest text-primary mb-2 uppercase">Projects Coming Soon</p>
+              <h4 class="font-headline font-bold text-xl text-on-surface">Future Case Studies</h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-4 work-card bg-bg-low group cursor-pointer" style="aspect-ratio:4/3;">
+          <div class="work-card-inner w-full h-full flex items-center justify-center"
+            style="background:linear-gradient(315deg,rgba(182,208,136,0.1),rgba(27,27,27,1));">
+            <span class="font-headline font-black text-on-surface/5 text-4xl uppercase tracking-widest">SOON</span>
+          </div>
+          <div class="card-overlay">
+            <div>
+              <p class="font-label text-xs tracking-widest text-primary mb-2 uppercase">Projects Coming Soon</p>
+              <h4 class="font-headline font-bold text-xl text-on-surface">Your Project Could Be Here</h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="md:col-span-4 work-card bg-bg-low group cursor-pointer" style="aspect-ratio:4/3;">
+          <div class="work-card-inner w-full h-full flex items-center justify-center"
+            style="background:linear-gradient(135deg,rgba(85,107,47,0.15),#1f1f1f);">
+            <span class="font-headline font-black text-on-surface/5 text-4xl uppercase tracking-widest">SOON</span>
+          </div>
+          <div class="card-overlay">
+            <div>
+              <p class="font-label text-xs tracking-widest text-primary mb-2 uppercase">Projects Coming Soon</p>
+              <h4 class="font-headline font-bold text-xl text-on-surface">Future Case Studies</h4>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════
+     PROCESS
+══════════════════════════════════════════════════ -->
+  <section id="process" class="full py-24 bg-bg-low">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+
+      <div class="mb-20 reveal">
+        <p class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-5">How We Work</p>
+        <h2 class="font-headline font-black tracking-tighter leading-none text-on-surface"
+          style="font-size:clamp(3rem,7vw,7rem);">
+          OUR<br />PROCESS
+        </h2>
+      </div>
+
+      <!-- Timeline (Stitch-style alternating) -->
+      <div class="relative">
+        <!-- Center line desktop -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-px bg-outline-v/20 hidden md:block"></div>
+
+        <!-- Step 01 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 mb-24 items-center stagger">
+          <div class="md:text-right">
+            <div class="inline-block bg-primary text-on-primary font-headline font-black text-3xl p-4 mb-6">01</div>
+            <h3 class="font-headline font-bold text-3xl uppercase tracking-tight mb-4">Send Content</h3>
+            <p class="font-body text-on-surface-v leading-relaxed max-w-sm md:ml-auto">
+              Share your long-form video via Drive, Dropbox, or any link. Include any notes on tone, highlights, or
+              platform focus. The more context, the sharper the output.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2 md:justify-end">
+              <span class="tag">Google Drive</span>
+              <span class="tag">Any Format</span>
+              <span class="tag">Simple Brief</span>
+            </div>
+          </div>
+          <div class="hidden md:flex items-center justify-center">
+            <div
+              class="w-full max-w-xs h-48 bg-bg-container border border-outline-v/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-8xl"
+                style="font-variation-settings:'FILL' 0;">upload_file</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 02 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 mb-24 items-center stagger">
+          <div class="hidden md:block">
+            <div class="w-full max-w-xs h-48 bg-bg-container border border-primary/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-8xl"
+                style="font-variation-settings:'FILL' 1;">movie_edit</span>
+            </div>
+          </div>
+          <div>
+            <div class="inline-block border-2 border-primary text-primary font-headline font-black text-3xl p-4 mb-6">02
+            </div>
+            <h3 class="font-headline font-bold text-3xl uppercase tracking-tight mb-4">We Create</h3>
+            <p class="font-body text-on-surface-v leading-relaxed max-w-sm">
+              Our editors watch your content, identify the most valuable moments, and cut them into platform-native
+              clips. Every clip gets hooks, captions, pacing, and formatting — done properly.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="tag">Hook Identification</span>
+              <span class="tag">Precision Editing</span>
+              <span class="tag">Captions</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 03 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 mb-24 items-center stagger">
+          <div class="md:text-right">
+            <div class="inline-block bg-primary text-on-primary font-headline font-black text-3xl p-4 mb-6">03</div>
+            <h3 class="font-headline font-bold text-3xl uppercase tracking-tight mb-4">You Approve</h3>
+            <p class="font-body text-on-surface-v leading-relaxed max-w-sm md:ml-auto">
+              We deliver a batch of clips for your review. One round of revisions included. You approve what you love,
+              request edits on anything else, and we handle it fast.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2 md:justify-end">
+              <span class="tag">Fast Turnaround</span>
+              <span class="tag">1 Revision Round</span>
+              <span class="tag">Full Control</span>
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <div class="p-10 bg-bg-lowest border border-primary/20">
+              <div class="font-headline font-black text-7xl text-primary/10 select-none">APPROVE</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step 04 -->
+        <div class="relative grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-20 items-center stagger">
+          <div class="hidden md:block">
+            <div
+              class="w-full max-w-xs h-48 bg-bg-container border border-outline-v/20 flex items-center justify-center">
+              <span class="material-symbols-outlined text-primary text-8xl"
+                style="font-variation-settings:'FILL' 1;">rocket_launch</span>
+            </div>
+          </div>
+          <div>
+            <div class="inline-block border-2 border-primary text-primary font-headline font-black text-3xl p-4 mb-6">04
+            </div>
+            <h3 class="font-headline font-bold text-3xl uppercase tracking-tight mb-4">We Deliver</h3>
+            <p class="font-body text-on-surface-v leading-relaxed max-w-sm">
+              Final clips delivered as organized files, or posted directly to your social channels on your schedule. You
+              get a content library ready to deploy — or we deploy it for you.
+            </p>
+            <div class="mt-6 flex flex-wrap gap-2">
+              <span class="tag">Organized Files</span>
+              <span class="tag">Direct Posting</span>
+              <span class="tag">Done-For-You</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA strip -->
+      <div
+        class="mt-24 pt-12 border-t border-outline-v/20 flex flex-col md:flex-row items-start md:items-center justify-between gap-8 reveal">
+        <div>
+          <h3 class="font-headline font-black text-4xl md:text-6xl tracking-tighter">Ready to start?</h3>
+          <p class="font-body text-on-surface-v mt-2 text-sm">Average turnaround: 48–72 hours per batch.</p>
+        </div>
+        <a href="#contact" class="btn-primary px-10 py-5 text-xs flex-shrink-0">
+          Begin Your Project <span class="material-symbols-outlined text-base">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════
+     ABOUT
+══════════════════════════════════════════════════ -->
+  <section id="about" class="full py-24 bg-bg-base">
+    <div class="max-w-7xl mx-auto px-6 md:px-12">
+
+      <!-- Intro block -->
+      <div class="min-h-[60vh] flex flex-col justify-center mb-24 reveal">
+        <span class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-8 block">Who We Are</span>
+        <h1 class="font-headline font-bold tracking-tighter leading-[0.9] mb-10 max-w-5xl"
+          style="font-size:clamp(3rem,8vw,7.5rem);">
+          BUILT FOR<br />CREATORS WHO <span class="text-primary">WANT</span><br />MORE FROM THEIR CONTENT.
+        </h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-start max-w-4xl">
+          <p class="font-body text-xl text-on-surface-v font-light leading-relaxed">
+            ZIV started with a simple observation: most creators are sitting on hours of valuable content that never
+            reaches its full potential. We exist to change that.
+          </p>
+          <p class="font-body text-base text-on-surface-v/70 leading-relaxed">
+            We combine editorial instinct with platform expertise to extract and package the most impactful moments from
+            your long-form content. We're not a generic agency — we focus deeply on one discipline and do it better than
+            anyone.
+          </p>
+        </div>
+      </div>
+
+      <!-- Tonal shift stats -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-px bg-outline-v/20 mb-24 stagger">
+        <div class="bg-bg-low p-10">
+          <span class="font-headline font-black text-5xl text-primary">50+</span>
+          <p class="font-label text-[10px] uppercase tracking-widest text-on-surface-v mt-3">Videos Repurposed</p>
+        </div>
+        <div class="bg-bg-low p-10">
+          <span class="font-headline font-black text-5xl text-primary">2+</span>
+          <p class="font-label text-[10px] uppercase tracking-widest text-on-surface-v mt-3">Creators Served</p>
+        </div>
+        <div class="bg-bg-low p-10">
+          <span class="font-headline font-black text-5xl text-primary">48-72hr</span>
+          <p class="font-label text-[10px] uppercase tracking-widest text-on-surface-v mt-3">Avg Turnaround</p>
+        </div>
+        <div class="bg-bg-low p-10">
+          <span class="font-headline font-black text-5xl text-primary">98%</span>
+          <p class="font-label text-[10px] uppercase tracking-widest text-on-surface-v mt-3">Client Satisfaction</p>
+        </div>
+      </div>
+
+      <!-- Values -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-px bg-outline-v/20 stagger">
+        <div class="bg-bg-low p-10">
+          <div class="w-1 h-10 bg-primary mb-8"></div>
+          <h4 class="font-headline font-bold text-xl uppercase tracking-tight mb-4">Precision Editing</h4>
+          <p class="font-body text-on-surface-v text-sm leading-relaxed">Every cut is intentional. We don't just trim —
+            we sculpt the narrative arc of each clip for maximum retention.</p>
+        </div>
+        <div class="bg-bg-low p-10">
+          <div class="w-1 h-10 bg-primary mb-8"></div>
+          <h4 class="font-headline font-bold text-xl uppercase tracking-tight mb-4">Platform Native</h4>
+          <p class="font-body text-on-surface-v text-sm leading-relaxed">We format every clip for its destination —
+            TikTok, Reels, Shorts, LinkedIn. Different platforms demand different treatment.</p>
+        </div>
+        <div class="bg-bg-low p-10">
+          <div class="w-1 h-10 bg-primary mb-8"></div>
+          <h4 class="font-headline font-bold text-xl uppercase tracking-tight mb-4">Volume Without Sacrifice</h4>
+          <p class="font-body text-on-surface-v text-sm leading-relaxed">We produce consistently and at volume — so your
+            posting calendar stays full without your quality ever dropping.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════
+     CONTACT
+══════════════════════════════════════════════════ -->
+  <section id="contact" class="full py-24 bg-bg-lowest relative overflow-hidden">
+    <!-- Giant ghost text bg -->
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
+      <span class="font-headline font-black select-none"
+        style="font-size:22vw;color:rgba(182,208,136,0.025);letter-spacing:-0.02em;">CONTACT</span>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-6 md:px-12 relative z-10">
+
+      <!-- Header -->
+      <div class="mb-20 reveal">
+        <p class="font-label text-xs uppercase tracking-[0.4em] text-primary mb-5">Get in Touch</p>
+        <h2 class="font-headline font-black tracking-tighter leading-[0.88]" style="font-size:clamp(3rem,8vw,7.5rem);">
+          LET'S BUILD<br />SOMETHING<br /><span class="text-ghost">TOGETHER.</span>
+        </h2>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24 items-start">
+
+        <!-- Form -->
+        <div class="lg:col-span-7">
+          <div class="relative border border-outline-v/20 p-8 md:p-12">
+            <!-- Corner accents -->
+            <div class="absolute top-0 left-0 w-7 h-7 border-t-2 border-l-2 border-primary"></div>
+            <div class="absolute top-0 right-0 w-7 h-7 border-t-2 border-r-2 border-primary"></div>
+            <div class="absolute bottom-0 left-0 w-7 h-7 border-b-2 border-l-2 border-primary"></div>
+            <div class="absolute bottom-0 right-0 w-7 h-7 border-b-2 border-r-2 border-primary"></div>
+
+            <h3 class="font-headline font-bold text-3xl uppercase tracking-tight mb-10">Send a Message</h3>
+
+            <!-- Error banner -->
+            <div id="form-error" class="hidden mb-6 border border-red-500/40 bg-red-500/10 px-5 py-3">
+              <p id="form-error-msg" class="font-label text-xs text-red-400 uppercase tracking-widest"></p>
+            </div>
+
+            <form id="contact-form" class="space-y-8" novalidate>
+              <!-- FormSubmit hidden config -->
+              <input type="hidden" name="_subject" value="New Project Inquiry — ZIV Agency">
+              <input type="hidden" name="_captcha" value="false">
+              <input type="hidden" name="_template" value="table">
+              <input type="hidden" name="_next" value="">
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                  <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-v block mb-3">Full
+                    Name</label>
+                  <input type="text" id="fname" name="name" placeholder="Your name" class="form-field" />
+                </div>
+                <div>
+                  <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-v block mb-3">Email
+                    Address</label>
+                  <input type="email" id="femail" name="email" placeholder="your@email.com" class="form-field" />
+                </div>
+              </div>
+              <div>
+                <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-v block mb-3">Service
+                  Needed</label>
+                <select id="fservice" name="service" class="form-field" style="cursor:pointer;">
+                  <option value="" disabled selected style="background:#1b1b1b;">Select a service</option>
+                  <option style="background:#1b1b1b;">Content Repurposing</option>
+                  <option style="background:#1b1b1b;">Video Editing</option>
+                  <option style="background:#1b1b1b;">Short-Form Strategy</option>
+                  <option style="background:#1b1b1b;">Social Media Posting</option>
+                  <option style="background:#1b1b1b;">Full Package</option>
+                </select>
+              </div>
+              <div>
+                <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-v block mb-3">Tell Us
+                  About Your Content</label>
+                <textarea id="fmessage" name="message"
+                  placeholder="What type of content do you create? How long are your videos? What platforms do you post on?"
+                  class="form-field resize-none" rows="5"></textarea>
+              </div>
+              <div class="flex items-center justify-between flex-wrap gap-4">
+                <p class="font-mono text-[10px] text-on-surface/20 uppercase tracking-widest">* We respond within 24
+                  hours</p>
+                <button id="submit-btn" type="button" onclick="handleSubmit()" class="btn-primary px-8 py-4 text-xs">
+                  Send Message <span class="material-symbols-outlined text-base">arrow_forward</span>
+                </button>
+              </div>
+            </form>
+
+            <!-- Success state -->
+            <div id="form-success" class="hidden flex-col items-center justify-center py-16 text-center">
+              <div class="w-16 h-16 border-2 border-primary flex items-center justify-center mb-6">
+                <span class="material-symbols-outlined text-primary text-4xl"
+                  style="font-variation-settings:'FILL' 1;">check</span>
+              </div>
+              <h4 class="font-headline font-bold text-3xl tracking-tight mb-3">Message Sent!</h4>
+              <p class="font-body text-on-surface-v">We'll be in touch within 24 hours.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info panel -->
+        <div class="lg:col-span-4 lg:col-start-9 space-y-12 reveal-right">
+          <div>
+            <h3 class="font-headline font-bold text-2xl uppercase tracking-tight mb-8">Direct Channels</h3>
+            <div class="space-y-8">
+              <div>
+                <span
+                  class="font-label text-[10px] uppercase tracking-widest text-on-surface-v/60 block mb-2">Email</span>
+                <a href="mailto:thezivagency@gmail.com"
+                  class="font-body text-lg text-on-surface hover:text-primary transition-colors underline decoration-outline-v/50 underline-offset-8">
+                  thezivagency@gmail.com
+                </a>
+              </div>
+              <div>
+                <span class="font-label text-[10px] uppercase tracking-widest text-on-surface-v/60 block mb-2">Response
+                  Time</span>
+                <p class="font-body text-on-surface-v">Within 24 hours</p>
+              </div>
+              <div>
+                <span
+                  class="font-label text-[10px] uppercase tracking-widest text-on-surface-v/60 block mb-2">Availability</span>
+                <p class="font-body text-primary text-sm">● Currently accepting new clients</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social links -->
+          <div>
+            <h3 class="font-headline font-bold text-sm uppercase tracking-widest mb-6 text-on-surface-v/60">Follow Us
+            </h3>
+            <div class="flex flex-col gap-4">
+              <a href="https://www.instagram.com/thezivagency?igsh=d20wbzh6NDh4aXh5" target="_blank"
+                rel="noopener noreferrer"
+                class="font-label text-xs uppercase tracking-widest text-on-surface/40 hover:text-on-surface transition-colors hover:underline decoration-primary underline-offset-4 duration-300">Instagram</a>
+              <a href="#"
+                class="font-label text-xs uppercase tracking-widest text-on-surface/40 hover:text-on-surface transition-colors hover:underline decoration-primary underline-offset-4 duration-300">LinkedIn</a>
+            </div>
+          </div>
+
+          <!-- Quick tagline block -->
+          <div class="bg-primary-dk/40 border border-primary/20 p-8">
+            <p class="font-label text-[10px] uppercase tracking-widest text-primary mb-4">Why ZIV?</p>
+            <p class="font-headline font-bold text-xl text-on-surface leading-tight">
+              ONE LONG VIDEO.<br />WEEKS OF CONTENT.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════════════════════════════════════════
+     FOOTER
+══════════════════════════════════════════════════ -->
+  <footer class="bg-bg-lowest w-full py-16 px-6 md:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-end mb-16">
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-8 h-8 border border-primary/50 flex items-center justify-center">
+              <div class="w-3.5 h-3.5 bg-primary"></div>
+            </div>
+            <span class="font-headline font-black text-3xl text-primary tracking-tighter">ZIV</span>
+          </div>
+          <p class="font-label text-xs uppercase tracking-[0.2em] text-on-surface/25 leading-loose max-w-xs">
+            Content repurposing agency. Turning long-form videos into short-form content that grows your audience.
+          </p>
+        </div>
+        <div class="flex flex-col md:flex-row gap-12 justify-end">
+          <div class="flex flex-col gap-4">
+            <span class="font-label text-xs uppercase tracking-[0.2em] text-primary">Pages</span>
+            <a href="#home"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface hover:underline decoration-primary underline-offset-4 transition-all duration-300">Home</a>
+            <a href="#services"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface hover:underline decoration-primary underline-offset-4 transition-all duration-300">Services</a>
+            <a href="#work"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface hover:underline decoration-primary underline-offset-4 transition-all duration-300">Work</a>
+            <a href="#process"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface hover:underline decoration-primary underline-offset-4 transition-all duration-300">Process</a>
+            <a href="#about"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface hover:underline decoration-primary underline-offset-4 transition-all duration-300">About</a>
+            <a href="#contact"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface hover:underline decoration-primary underline-offset-4 transition-all duration-300">Contact</a>
+          </div>
+          <div class="flex flex-col gap-4">
+            <span class="font-label text-xs uppercase tracking-[0.2em] text-primary">Contact</span>
+            <a href="mailto:thezivagency@gmail.com"
+              class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/40 hover:text-on-surface transition-all duration-300">thezivagency@gmail.com</a>
+            <span class="font-label text-xs uppercase tracking-[0.15em] text-on-surface/20">Response: 24hrs</span>
+          </div>
+        </div>
+      </div>
+      <div class="pt-8 border-t border-outline-v/10 flex flex-col md:flex-row justify-between gap-4">
+        <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface/15">© 2026 ZIV. All Rights
+          Reserved.</span>
+        <span class="font-mono text-[10px] uppercase tracking-[0.2em] text-on-surface/15">Content Repurposing
+          Agency</span>
+      </div>
+    </div>
+  </footer>
+
+
+  <!-- ══════════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════════ -->
+  <script>
+    // ── Custom Cursor ──────────────────────────────────
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursor-ring');
+    let cx = 0, cy = 0, rx = 0, ry = 0;
+
+    document.addEventListener('mousemove', e => {
+      cx = e.clientX; cy = e.clientY;
+      cursor.style.left = (cx - 5) + 'px';
+      cursor.style.top = (cy - 5) + 'px';
+    });
+
+    (function animRing() {
+      rx += (cx - rx) * 0.12;
+      ry += (cy - ry) * 0.12;
+      ring.style.left = (rx - 19) + 'px';
+      ring.style.top = (ry - 19) + 'px';
+      requestAnimationFrame(animRing);
+    })();
+
+    // Hover state toggle
+    document.querySelectorAll('a,button,.work-card,.service-row').forEach(el => {
+      el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+    });
+
+    // ── Navbar scroll ──────────────────────────────────
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 50) {
+        navbar.style.borderBottom = '1px solid rgba(69,72,60,0.3)';
+      } else {
+        navbar.style.borderBottom = 'none';
+      }
+    });
+
+    // ── Scroll reveal ──────────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal,.reveal-left,.reveal-right,.stagger');
+    const revealObs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => revealObs.observe(el));
+
+    // ── Active nav on scroll ───────────────────────────
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    const activeObs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(l => {
+            l.classList.remove('active');
+            if (l.getAttribute('href') === '#' + e.target.id) l.classList.add('active');
+          });
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(s => activeObs.observe(s));
+
+    // ── Mobile menu ────────────────────────────────────
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const hams = document.querySelectorAll('.ham');
+    let menuOpen = false;
+
+    hamburger.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      mobileMenu.classList.toggle('open', menuOpen);
+      if (menuOpen) {
+        hams[0].style.transform = 'translateY(6.5px) rotate(45deg)';
+        hams[1].style.opacity = '0';
+        hams[2].style.transform = 'translateY(-6.5px) rotate(-45deg)';
+        hams[2].style.width = '24px';
+      } else {
+        hams.forEach(h => { h.style.transform = ''; h.style.opacity = '1'; });
+        hams[2].style.width = '16px';
+      }
+    });
+
+    document.querySelectorAll('.mob-link').forEach(l => l.addEventListener('click', () => {
+      menuOpen = false;
+      mobileMenu.classList.remove('open');
+      hams.forEach(h => { h.style.transform = ''; h.style.opacity = '1'; });
+      hams[2].style.width = '16px';
+    }));
+
+    // ── Smooth scroll ──────────────────────────────────
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+      a.addEventListener('click', function (e) {
+        const t = document.querySelector(this.getAttribute('href'));
+        if (t) { e.preventDefault(); t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+      });
+    });
+
+    // ── Contact form ───────────────────────────────────
+    function showFormError(msg) {
+      const errEl = document.getElementById('form-error');
+      const errMsg = document.getElementById('form-error-msg');
+      errMsg.textContent = msg;
+      errEl.classList.remove('hidden');
+      setTimeout(() => errEl.classList.add('hidden'), 4000);
+    }
+
+    function handleSubmit() {
+      const name = document.getElementById('fname').value.trim();
+      const email = document.getElementById('femail').value.trim();
+      const service = document.getElementById('fservice').value;
+      const msg = document.getElementById('fmessage').value.trim();
+      const btn = document.getElementById('submit-btn');
+
+      // Validation
+      if (!name) { showFormError('Please enter your full name.'); return; }
+      if (!email) { showFormError('Please enter your email address.'); return; }
+      const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRx.test(email)) { showFormError('Please enter a valid email address.'); return; }
+      if (!service) { showFormError('Please select a service.'); return; }
+      if (!msg) { showFormError('Please tell us about your content.'); return; }
+
+      // Loading state
+      btn.innerHTML = '<span class="material-symbols-outlined text-base" style="animation:spin-slow 1s linear infinite;">autorenew</span> Sending...';
+      btn.disabled = true;
+      btn.style.opacity = '0.7';
+
+      // Submit via FormSubmit AJAX
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('email', email);
+      formData.append('service', service);
+      formData.append('message', msg);
+      formData.append('_subject', 'New Project Inquiry — ZIV Agency');
+      formData.append('_captcha', 'false');
+      formData.append('_template', 'table');
+
+      fetch('https://formsubmit.co/ajax/thezivagency@gmail.com', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json' },
+        body: formData
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (data.success === 'true' || data.success === true) {
+            document.getElementById('contact-form').classList.add('hidden');
+            const s = document.getElementById('form-success');
+            s.classList.remove('hidden');
+            s.classList.add('flex');
+          } else {
+            throw new Error('Submission failed');
+          }
+        })
+        .catch(() => {
+          btn.innerHTML = 'Send Message <span class="material-symbols-outlined text-base">arrow_forward</span>';
+          btn.disabled = false;
+          btn.style.opacity = '';
+          showFormError('Failed to send. Please email us directly at thezivagency@gmail.com');
+        });
+    }
+  </script>
+
+</body>
+
+</html>
